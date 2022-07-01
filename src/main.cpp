@@ -1,12 +1,12 @@
 #include <iostream>
 #include <string>
 #include <curl/curl.h>
+#include <future>
 #include <jsoncpp/json/json.h>
 
 using namespace std;
 
-struct walletParams
-{
+struct walletParams {
   double final_balance;
   u_int  n_tx;
   double total_received;
@@ -49,18 +49,25 @@ int main(void) {
 	base_url += wallet;
 
 	curl = curl_easy_init();
-	if(curl)
-	{
-    	curl_easy_setopt(curl, CURLOPT_URL, base_url.c_str());
-    	curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
-    	curl_easy_setopt(curl, CURLOPT_WRITEDATA, &readBuffer);
-    	res = curl_easy_perform(curl);
-    	curl_easy_cleanup(curl);
 
-		cout << "Wallet      : " << wallet << endl;
-		cout << "Balance     : " << to_string((decode(readBuffer, wallet).final_balance)/100000000) << endl;
-		cout << "Transactions: " << to_string(decode(readBuffer, wallet).n_tx) << endl;
-		cout << "Tot.Received: " << to_string((decode(readBuffer, wallet).total_received)/100000000) << endl;
-  	}
+		if(curl)
+		{
+			curl_easy_setopt(curl, CURLOPT_URL, base_url.c_str());
+			curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
+			curl_easy_setopt(curl, CURLOPT_WRITEDATA, &readBuffer);
+			res = curl_easy_perform(curl);
+			curl_easy_cleanup(curl);
+
+			cout << "Wallet      : " << wallet << endl;
+			
+			future<walletParams> r = async(decode, readBuffer, wallet);
+			walletParams res = r.get();
+			// walletParams res = decode(readBuffer, wallet);
+			
+			cout << "Balance     : " << to_string(res.final_balance) << endl;
+			cout << "Transactions: " << to_string(res.n_tx) << endl;
+			cout << "Tot.Received: " << to_string(res.total_received) << endl;
+		}
+
   	return 0;
 }
