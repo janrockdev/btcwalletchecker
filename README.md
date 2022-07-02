@@ -26,3 +26,8 @@ https://www.digitalocean.com/community/tutorials/how-to-install-and-secure-redis
 ```shell
 sudo apt install redis-server
 ```
+
+Profiler:
+```shell
+valgrind --tool=helgrind -s ./collector
+```
