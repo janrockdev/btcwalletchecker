@@ -20,3 +20,9 @@ Balance     : 132003.543918
 Transactions: 760
 Tot Received: 231665.428404
 ```
+
+Redis:
+https://www.digitalocean.com/community/tutorials/how-to-install-and-secure-redis-on-ubuntu-20-04
+```shell
+sudo apt install redis-server
+```
